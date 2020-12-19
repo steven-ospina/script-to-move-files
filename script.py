@@ -2,59 +2,69 @@ import os
 from sys import argv
 import shutil
 
-list_dir = []
-size_files = {}
-size_number = []
-flag_4 = False
-flag_5 = True
-number_folder = 0
+# Atributos
+dictionary_files: dict = {}
+size_numbers: list = []
+flag_4: bool = False
+flag_5: bool = True
+number_folder: int = 0
 
+# Filtra  y agrega los datos en una lista
 os.chdir(argv[1])
 cwd = os.getcwd()
 list_files = os.listdir(cwd)
-list_dir = [value for value in list_files if ".xml" in value]
+leaked_files = [value for value in list_files if ".xml" in value]
 
-for value in list_dir:
+# Lista y reconoce el tamaño de los archivos y los agrega a un diccionario
+# y el tamaño de los archivos los agrega a una lista
+for value in leaked_files:
     size = os.stat(value)
-    size_files.update({size.st_size: value})
-    size_number.append(size.st_size)
+    dictionary_files.update({size.st_size: value})
+    size_numbers.append(size.st_size)
 
-size_number.sort()
+# Organiza los archivos de menor a mayor
+size_numbers.sort()
 
 
-def get_size_folder(list_dir):
-    list_files = os.listdir(list_dir)
+# Función para obtener la longitud de las carpetas creadas
+def get_size_folder(path_dir: str) -> int:
+    list_files = os.listdir(path_dir)
     length = len(list_files)
     return length
 
 
-def mkdir_folder(number):
+# Función para crear las carpetas
+def mkdir_folder(number: int) -> None:
     os.mkdir(str(number))
+
+
+# Función para mover los archivos en las carpetas creadas
+def move_file(value: int, number_folder: int) -> int:
+    shutil.move(f"{cwd}/{dictionary_files[value]}", f"{cwd}/{str(number_folder)}/{dictionary_files[value]}")
+    get = get_size_folder(f"{cwd}/{number_folder}/")
+    print(f"{dictionary_files[value]}")
+    return get
 
 
 try:
     number_folder = number_folder + 1
-    mkdir_folder(number_folder)
+    mkdir_folder(number=number_folder)
     print(number_folder)
-    for value in size_number:
+    for value in size_numbers:
         if flag_5:
-            shutil.move(f"{cwd}/{size_files[value]}", f"{cwd}/{str(number_folder)}/{size_files[value]}")
-            get = get_size_folder(f"{cwd}/{number_folder}/")
-            print(f"{size_files[value]}")
+            get = move_file(value=value, number_folder=number_folder)
             if get >= 5:
+                number_folder = number_folder + 1
+                mkdir_folder(number=number_folder)
+                print(number_folder)
                 flag_5 = False
                 flag_4 = True
-                number_folder = number_folder + 1
-                mkdir_folder(number_folder)
-                print(number_folder)
                 continue
         if flag_4:
-            shutil.move(f"{cwd}/{size_files[value]}", f"{cwd}/{str(number_folder)}/{size_files[value]}")
-            get2 = get_size_folder(f"{cwd}/{number_folder}/")
-            print(f"{size_files[value]}")
+            get2 = move_file(value=value, number_folder=number_folder)
             if get2 >= 4:
                 number_folder = number_folder + 1
-                mkdir_folder(number_folder)
+                mkdir_folder(number=number_folder)
                 print(number_folder)
                 continue
 
