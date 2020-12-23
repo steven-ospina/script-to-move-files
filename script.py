@@ -42,21 +42,25 @@ def mkdir_folder(number: int) -> None:
 def move_file(value: int, number_folder: int) -> int:
     shutil.move(f"{cwd}/{dictionary_files[value]}", f"{cwd}/{str(number_folder)}/{dictionary_files[value]}")
     get = get_size_folder(f"{cwd}/{number_folder}/")
-    print(f"{dictionary_files[value]}")
+    print(f"  ►{dictionary_files[value]} Size Bytes ► {value}")
     return get
+
+
+def print_number_folder(number_folder):
+    print(f"{number_folder} ▼")
 
 
 try:
     number_folder = number_folder + 1
     mkdir_folder(number=number_folder)
-    print(number_folder)
+    print_number_folder(number_folder=number_folder)
     for value in size_numbers:
         if flag_5:
             get = move_file(value=value, number_folder=number_folder)
             if get >= 5:
                 number_folder = number_folder + 1
                 mkdir_folder(number=number_folder)
-                print(number_folder)
+                print_number_folder(number_folder=number_folder)
                 flag_5 = False
                 flag_4 = True
                 continue
@@ -65,8 +69,10 @@ try:
             if get2 >= 4:
                 number_folder = number_folder + 1
                 mkdir_folder(number=number_folder)
-                print(number_folder)
+                print_number_folder(number_folder=number_folder)
                 continue
 
 except Exception as error:
     print(error)
+finally:
+    print(f"Total xml ► ► {len(size_numbers)} ◄ ◄")
