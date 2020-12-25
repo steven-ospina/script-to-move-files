@@ -48,7 +48,7 @@ def mkdir_folder(number: int) -> None:
 def move_file(value: int, number_folder: int) -> int:
     shutil.move(f"{cwd}/{dictionary_files[value]}", f"{cwd}/{str(number_folder)}/{dictionary_files[value]}")
     get = get_size_folder(f"{cwd}/{number_folder}/")
-    print(f"  ►{print_blue(text=dictionary_files[value])} Size Bytes ► {print_yellow(text=value)}")
+    print(f"  ►{print_blue(text=dictionary_files[value])} {print_green(text='Size Bytes')} ► {print_yellow(text=value)}")
     return get
 
 
@@ -66,6 +66,11 @@ def print_yellow(text: str) -> str:
 
 def print_green(text: str) -> str:
     return f"{color_green_console}{text_bold_console}{text}{color_end_console}"
+
+
+def print_red(text: str, message_Exception: Exception) -> str:
+    message_form = f"{color_red_console}{text_bold_console}{text}:{message_Exception}{color_end_console}"
+    return message_form
 
 
 try:
@@ -91,8 +96,6 @@ try:
                 mkdir_folder(number=number_folder)
                 print_number_folder(number_folder=number_folder)
                 continue
-
+    print(f" {print_green(text='Total xml')} ► ► {len(size_numbers)} ◄ ◄")
 except Exception as error:
-    print(f"ERROR: {error}")
-finally:
-    print(f"Total xml ► ► {len(size_numbers)} ◄ ◄")
+    print(print_red(text="ERROR",message_Exception=error))
