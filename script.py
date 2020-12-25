@@ -8,6 +8,12 @@ size_numbers: list = []
 flag_4: bool = False
 flag_5: bool = True
 number_folder: int = 0
+color_green_console: str = '\33[32m'
+color_blue_console: str = '\33[34m'
+color_yellow_console: str = '\33[33m'
+color_red_console: str = '\033[91m'
+color_end_console: str = '\033[0m'
+text_bold_console: str = '\33[1m'
 
 # Filtra  y agrega los datos en una lista
 os.chdir(argv[1])
@@ -42,22 +48,35 @@ def mkdir_folder(number: int) -> None:
 def move_file(value: int, number_folder: int) -> int:
     shutil.move(f"{cwd}/{dictionary_files[value]}", f"{cwd}/{str(number_folder)}/{dictionary_files[value]}")
     get = get_size_folder(f"{cwd}/{number_folder}/")
-    print(f"  ►{dictionary_files[value]} Size Bytes ► {value}")
+    print(f"  ►{print_blue(text=dictionary_files[value])} Size Bytes ► {print_yellow(text=value)}")
     return get
 
 
-def print_number_folder(number_folder):
-    print(f"{number_folder} ▼")
+def print_number_folder(number_folder) -> None:
+    print(f"{print_yellow(text=str(number_folder))} {print_yellow(text='▼')}")
+
+
+def print_blue(text: str) -> str:
+    return f"{color_blue_console}{text_bold_console}{text}{color_end_console}"
+
+
+def print_yellow(text: str) -> str:
+    return f"{color_yellow_console}{text_bold_console}{text}{color_end_console}"
+
+
+def print_green(text: str) -> str:
+    return f"{color_green_console}{text_bold_console}{text}{color_end_console}"
 
 
 try:
     number_folder = number_folder + 1
     mkdir_folder(number=number_folder)
     print_number_folder(number_folder=number_folder)
-    for value in size_numbers:
+    for number_value in size_numbers:
         if flag_5:
-            get = move_file(value=value, number_folder=number_folder)
-            if get >= 5:
+            size_folder = move_file(value=number_value, number_folder=number_folder)
+            first_folder = 5
+            if size_folder >= first_folder:
                 number_folder = number_folder + 1
                 mkdir_folder(number=number_folder)
                 print_number_folder(number_folder=number_folder)
@@ -65,14 +84,15 @@ try:
                 flag_4 = True
                 continue
         if flag_4:
-            get2 = move_file(value=value, number_folder=number_folder)
-            if get2 >= 4:
+            size_folder2 = move_file(value=number_value, number_folder=number_folder)
+            other_folders = 4
+            if size_folder2 >= other_folders:
                 number_folder = number_folder + 1
                 mkdir_folder(number=number_folder)
                 print_number_folder(number_folder=number_folder)
                 continue
 
 except Exception as error:
-    print(error)
+    print(f"ERROR: {error}")
 finally:
     print(f"Total xml ► ► {len(size_numbers)} ◄ ◄")
