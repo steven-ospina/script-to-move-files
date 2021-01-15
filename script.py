@@ -96,6 +96,11 @@ try:
                 mkdir_folder(number=number_folder)
                 print_number_folder(number_folder=number_folder)
                 continue
+    # Chequea para verificar si una carpeta que sin archivos y la elimina
+    size_end_folder = get_size_folder(f"{cwd}/{number_folder}/")
+    if size_end_folder == 0:
+        os.rmdir(f"{cwd}/{number_folder}/")
+        print(print_green(f'Se elimino la carpeta "{str(number_folder)}" por que esta vaciá'))
     print(f" {print_green(text='Total xml')} ► ► {len(size_numbers)} ◄ ◄")
 except Exception as error:
-    print(print_red(text="ERROR",message_Exception=error))
+    print(print_red(text="ERROR", message_Exception=error))
