@@ -16,8 +16,8 @@ def print_color(text: str, color: str, message_exception: Exception = '') -> str
 
     Args:
         text (str): Recibe el texto que se va a convertir en color.
-        color:
-        message_exception:
+        color (str): Recibe el color que al que se va a aplicar al texto.
+        message_exception (Exception)<-(optional): Recibe el mensaje de error que lance el script.
 
     Returns:
         str: Retorna el texto en color que hayan indicado.

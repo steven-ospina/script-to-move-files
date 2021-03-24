@@ -1,7 +1,7 @@
 # script-to-move-files
 
 ![dependencies](https://img.shields.io/badge/python-v3.6.9-blue.svg)
-![Current Version](https://img.shields.io/badge/version-1.1.3-green.svg)
+![Current Version](https://img.shields.io/badge/version-1.1.4-green.svg)
 
 Este script está diseñado para crear carpetas en orden numérico y mover los archivos en las carpetas creadas.
 
