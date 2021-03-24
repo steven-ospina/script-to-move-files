@@ -1,13 +1,9 @@
 import os
 from sys import argv
 import shutil
+import sys
 
 # Atributos
-dictionary_files: dict = {}
-size_numbers: list = []
-flag_4: bool = False
-flag_5: bool = True
-number_folder: int = 0
 color_green_console: str = '\33[32m'
 color_blue_console: str = '\33[34m'
 color_yellow_console: str = '\33[33m'
@@ -15,92 +11,173 @@ color_red_console: str = '\033[91m'
 color_end_console: str = '\033[0m'
 text_bold_console: str = '\33[1m'
 
-# Filtra  y agrega los datos en una lista
-os.chdir(argv[1])
-cwd = os.getcwd()
-list_files = os.listdir(cwd)
-leaked_files = [value for value in list_files if ".xml" in value]
-
-# Lista y reconoce el tamaño de los archivos y los agrega a un diccionario
-# y el tamaño de los archivos los agrega a una lista
-for value in leaked_files:
-    size = os.stat(value)
-    dictionary_files.update({size.st_size: value})
-    size_numbers.append(size.st_size)
-
-# Organiza los archivos de menor a mayor
-size_numbers.sort()
-
-
-# Función para obtener la longitud de las carpetas creadas
-def get_size_folder(path_dir: str) -> int:
-    list_files = os.listdir(path_dir)
-    length = len(list_files)
-    return length
-
-
-# Función para crear las carpetas
-def mkdir_folder(number: int) -> None:
-    os.mkdir(str(number))
-
-
-# Función para mover los archivos en las carpetas creadas
-def move_file(value: int, number_folder: int) -> int:
-    shutil.move(f"{cwd}/{dictionary_files[value]}", f"{cwd}/{str(number_folder)}/{dictionary_files[value]}")
-    get = get_size_folder(f"{cwd}/{number_folder}/")
-    print(f"  ►{print_blue(text=dictionary_files[value])} {print_green(text='Size Bytes')} ► {print_yellow(text=value)}")
-    return get
-
-
-def print_number_folder(number_folder) -> None:
-    print(f"{print_yellow(text=str(number_folder))} {print_yellow(text='▼')}")
-
 
 def print_blue(text: str) -> str:
+    """ Función para imprimir en la terminal con color azul.
+
+    Args:
+        text (str): Recibe el texto que se va a convertir en color azul.
+
+    Returns:
+        str: Retorna el texto en color azul.
+    """
     return f"{color_blue_console}{text_bold_console}{text}{color_end_console}"
 
 
 def print_yellow(text: str) -> str:
+    """ Función para imprimir en la terminal con color amarillo.
+
+    Args:
+        text (str): Recibe el texto que se va a convertir en color amarillo.
+
+    Returns:
+        str: Retorna el texto en color amarillo.
+    """
     return f"{color_yellow_console}{text_bold_console}{text}{color_end_console}"
 
 
 def print_green(text: str) -> str:
+    """ Función para imprimir en la terminal con color verde.
+
+    Args:
+        text (str): Recibe el texto que se va a convertir en color verde.
+
+    Returns:
+        str: Retorna el texto en color verde.
+    """
     return f"{color_green_console}{text_bold_console}{text}{color_end_console}"
 
 
 def print_red(text: str, message_Exception: Exception) -> str:
+    """ Función para imprimir en la terminal con color rojo.
+
+    Args:
+        text (str): Recibe el texto que se va a convertir en color rojo.
+        message_Exception (Exception): Recibe el mensaje de error.
+
+    Returns:
+        str: Retorna el texto en color rojo.
+    """
     message_form = f"{color_red_console}{text_bold_console}{text}:{message_Exception}{color_end_console}"
     return message_form
 
 
-try:
-    number_folder = number_folder + 1
-    mkdir_folder(number=number_folder)
-    print_number_folder(number_folder=number_folder)
-    for number_value in size_numbers:
-        if flag_5:
-            size_folder = move_file(value=number_value, number_folder=number_folder)
-            first_folder = 5
-            if size_folder >= first_folder:
-                number_folder = number_folder + 1
-                mkdir_folder(number=number_folder)
-                print_number_folder(number_folder=number_folder)
-                flag_5 = False
-                flag_4 = True
-                continue
-        if flag_4:
-            size_folder2 = move_file(value=number_value, number_folder=number_folder)
-            other_folders = 4
-            if size_folder2 >= other_folders:
-                number_folder = number_folder + 1
-                mkdir_folder(number=number_folder)
-                print_number_folder(number_folder=number_folder)
-                continue
-    # Chequea para verificar si una carpeta que sin archivos y la elimina
-    size_end_folder = get_size_folder(f"{cwd}/{number_folder}/")
-    if size_end_folder == 0:
-        os.rmdir(f"{cwd}/{number_folder}/")
-        print(print_green(f'Se elimino la carpeta "{str(number_folder)}" por que esta vaciá'))
-    print(f" {print_green(text='Total xml')} ► ► {len(size_numbers)} ◄ ◄")
-except Exception as error:
-    print(print_red(text="ERROR", message_Exception=error))
+def organize_data(list_data: list):
+    """ Función para organizar los archivos XML.
+
+    Args:
+        text (str): Recibe una lista con los nombres de los archivos XML.
+
+    Returns:
+        str: Retorna un diccionario con los datos organizados por:
+        {key = Número de la carpeta : value = Lista con los archivos XML }
+    """
+    try:
+        length_list = len(list_data)
+        if length_list <= 0:
+            print(print_yellow(text="No hay archivos XML en el directorio o ya están organizados."))
+            sys.exit()
+        start = 0
+        first_folder = 5
+        other_folders = 4
+        folder = first_folder
+        folder_counter = 0
+        root_dictionary = {}
+        while True:
+            folder_counter += 1
+            formula = start + folder
+            split_list = list_data[start:formula]
+            if formula <= length_list:
+                root_dictionary.update({folder_counter: split_list})
+            else:
+                end_length = len(split_list)
+                if end_length >= 1:
+                    root_dictionary.update({folder_counter: split_list})
+                break
+            if folder == first_folder:
+                folder = other_folders
+            start = formula
+        return root_dictionary
+    except Exception as error_in_organize_data:
+        print(print_red(text="Error al organizar los archivos XML", message_Exception=error_in_organize_data))
+
+
+def get_files_and_path(path: str) -> tuple:
+    """ Función para obtener la lista de los archivos en el directorio,
+        que le indiquen y filtrar por archivos XML.
+
+    Args:
+        path (str): Recibe la ruta absoluta del directorio en donde están,
+        los archivos.
+
+    Returns:
+        tuple: Retorna la lista con los archivos XML y la ruta completa en donde,
+        están los archivos.
+    """
+    os.chdir(path)
+    cwd = os.getcwd()
+    list_files = os.listdir(cwd)
+    leaked_files = [value for value in list_files if ".xml" in value]
+    return leaked_files, cwd
+
+
+def sort_data(data_list: list) -> list:
+    """ Función para organizar los archivos XML en orden ascendente con base,
+        en el tamaño del archivo.
+
+    Args:
+        data_list (list): Recibe la lista con los nombres de los archivos XML.
+
+    Returns:
+        list: Retorna una lista con los archivos XML organizados de forma ascendente.
+    """
+    dictionary_files: dict = {}
+    size_numbers: list = []
+    for value in data_list:
+        size = os.stat(value)
+        dictionary_files.update({size.st_size: value})
+        size_numbers.append(size.st_size)
+    # Organiza los archivos de menor a mayor
+    size_numbers.sort()
+    sort_list_data = [dictionary_files[size] for size in size_numbers]
+    return sort_list_data
+
+
+def mkdir_folder(number: int) -> None:
+    """ Función para crear carpeta en el directorio.
+
+    Args:
+        number (int): Recibe el nombre de la carpeta a crear.
+    """
+    os.mkdir(str(number))
+
+
+# Función para mover los archivos en las carpetas creadas
+def move_files(file_path: str, data_dictionary: dict) -> None:
+    """ Función para mover los archivos XML a las carpetas que se les indiquen.
+
+    Args:
+        file_path (str): Recibe la ruta del directorio en donde están los archivos XML.
+        data_dictionary (dict): Recibe el diccionario con los nombres de las carpetas,
+        y la lista de los archivos XML.
+    """
+    try:
+        file_counter = 0
+        for folder_number in data_dictionary:
+            print(print_yellow(text=f'▼ {folder_number}'))
+            mkdir_folder(number=folder_number)
+            for xml_file in data_dictionary[folder_number]:
+                file_counter += 1
+                file_size = os.stat(xml_file).st_size
+                shutil.move(f"{file_path}/{xml_file}", f"{file_path}/{str(folder_number)}/{xml_file}")
+                print(f"  ►{print_blue(text=xml_file)} {print_green(text='Size Bytes')} ► {print_yellow(text=str(file_size))}")
+        print(f"{print_green(text='Total xml')} ► ► {file_counter} ◄ ◄")
+    except Exception as error_in_move_files:
+        print(print_red(text="Error en mover los archivos XML", message_Exception=error_in_move_files))
+
+
+if __name__ == '__main__':
+    (files, directory_path) = get_files_and_path(path=argv[1])
+    data = sort_data(data_list=files)
+    dictionary = organize_data(list_data=data)
+    move_files(file_path=directory_path, data_dictionary=dictionary)
