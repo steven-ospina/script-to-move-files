@@ -1,9 +1,8 @@
 import os
-from sys import argv
+from sys import argv, exit
 import shutil
-import sys
 
-# Atributos
+# Attributes
 color_green_console: str = '\33[32m'
 color_blue_console: str = '\33[34m'
 color_yellow_console: str = '\33[33m'
@@ -12,94 +11,66 @@ color_end_console: str = '\033[0m'
 text_bold_console: str = '\33[1m'
 
 
-def print_blue(text: str) -> str:
-    """ Función para imprimir en la terminal con color azul.
+def print_color(text: str, color: str, message_exception: Exception = '') -> str:
+    """ Función para imprimir en la terminal en el color que le indiquen.
 
     Args:
-        text (str): Recibe el texto que se va a convertir en color azul.
+        text (str): Recibe el texto que se va a convertir en color.
+        color:
+        message_exception:
 
     Returns:
-        str: Retorna el texto en color azul.
+        str: Retorna el texto en color que hayan indicado.
     """
-    return f"{color_blue_console}{text_bold_console}{text}{color_end_console}"
+    if message_exception != '':
+        return f"{color}{text_bold_console}{text}: {message_exception}{color_end_console}"
+    else:
+        return f"{color}{text_bold_console}{text}{color_end_console}"
 
 
-def print_yellow(text: str) -> str:
-    """ Función para imprimir en la terminal con color amarillo.
-
-    Args:
-        text (str): Recibe el texto que se va a convertir en color amarillo.
-
-    Returns:
-        str: Retorna el texto en color amarillo.
-    """
-    return f"{color_yellow_console}{text_bold_console}{text}{color_end_console}"
-
-
-def print_green(text: str) -> str:
-    """ Función para imprimir en la terminal con color verde.
-
-    Args:
-        text (str): Recibe el texto que se va a convertir en color verde.
-
-    Returns:
-        str: Retorna el texto en color verde.
-    """
-    return f"{color_green_console}{text_bold_console}{text}{color_end_console}"
-
-
-def print_red(text: str, message_Exception: Exception) -> str:
-    """ Función para imprimir en la terminal con color rojo.
-
-    Args:
-        text (str): Recibe el texto que se va a convertir en color rojo.
-        message_Exception (Exception): Recibe el mensaje de error.
-
-    Returns:
-        str: Retorna el texto en color rojo.
-    """
-    message_form = f"{color_red_console}{text_bold_console}{text}:{message_Exception}{color_end_console}"
-    return message_form
-
-
-def organize_data(list_data: list):
+def organize_data(list_data: list) -> dict:
     """ Función para organizar los archivos XML.
 
     Args:
-        text (str): Recibe una lista con los nombres de los archivos XML.
+        list_data (list): Recibe una lista con los nombres de los archivos XML.
 
     Returns:
-        str: Retorna un diccionario con los datos organizados por:
+        dict: Retorna un diccionario con los datos organizados por:
         {key = Número de la carpeta : value = Lista con los archivos XML }
     """
     try:
-        length_list = len(list_data)
+        length_list: int = len(list_data)
         if length_list <= 0:
-            print(print_yellow(text="No hay archivos XML en el directorio o ya están organizados."))
-            sys.exit()
-        start = 0
-        first_folder = 5
-        other_folders = 4
-        folder = first_folder
-        folder_counter = 0
-        root_dictionary = {}
+            print(print_color(
+                text="No hay archivos XML en el directorio o ya están organizados.",
+                color=color_yellow_console))
+            exit()
+        start: int = 0
+        number_of_files_first_folder: int = 5
+        number_of_files_in_other_folders: int = 4
+        folder: int = number_of_files_first_folder
+        folder_counter: int = 0
+        root_dictionary: dict = {}
         while True:
             folder_counter += 1
-            formula = start + folder
-            split_list = list_data[start:formula]
+            formula: int = start + folder
+            split_list: list = list_data[start:formula]
             if formula <= length_list:
                 root_dictionary.update({folder_counter: split_list})
             else:
-                end_length = len(split_list)
+                end_length: int = len(split_list)
                 if end_length >= 1:
                     root_dictionary.update({folder_counter: split_list})
                 break
-            if folder == first_folder:
-                folder = other_folders
+            if folder == number_of_files_first_folder:
+                folder = number_of_files_in_other_folders
             start = formula
         return root_dictionary
     except Exception as error_in_organize_data:
-        print(print_red(text="Error al organizar los archivos XML", message_Exception=error_in_organize_data))
+        print(print_color(
+            text="Error al organizar los archivos XML",
+            color=color_red_console,
+            message_exception=error_in_organize_data))
 
 
 def get_files_and_path(path: str) -> tuple:
@@ -115,9 +86,9 @@ def get_files_and_path(path: str) -> tuple:
         están los archivos.
     """
     os.chdir(path)
-    cwd = os.getcwd()
-    list_files = os.listdir(cwd)
-    leaked_files = [value for value in list_files if ".xml" in value]
+    cwd: str = os.getcwd()
+    list_files: list = os.listdir(cwd)
+    leaked_files: list = [value for value in list_files if value.endswith(".xml")]
     return leaked_files, cwd
 
 
@@ -132,14 +103,14 @@ def sort_data(data_list: list) -> list:
         list: Retorna una lista con los archivos XML organizados de forma ascendente.
     """
     dictionary_files: dict = {}
-    size_numbers: list = []
+    list_of_file_sizes: list = []
     for value in data_list:
-        size = os.stat(value)
-        dictionary_files.update({size.st_size: value})
-        size_numbers.append(size.st_size)
+        file_size: int = os.stat(value).st_size
+        dictionary_files.update({file_size: value})
+        list_of_file_sizes.append(file_size)
     # Organiza los archivos de menor a mayor
-    size_numbers.sort()
-    sort_list_data = [dictionary_files[size] for size in size_numbers]
+    list_of_file_sizes.sort()
+    sort_list_data: list = [dictionary_files[size] for size in list_of_file_sizes]
     return sort_list_data
 
 
@@ -152,7 +123,6 @@ def mkdir_folder(number: int) -> None:
     os.mkdir(str(number))
 
 
-# Función para mover los archivos en las carpetas creadas
 def move_files(file_path: str, data_dictionary: dict) -> None:
     """ Función para mover los archivos XML a las carpetas que se les indiquen.
 
@@ -162,22 +132,28 @@ def move_files(file_path: str, data_dictionary: dict) -> None:
         y la lista de los archivos XML.
     """
     try:
-        file_counter = 0
+        file_counter: int = 0
         for folder_number in data_dictionary:
-            print(print_yellow(text=f'▼ {folder_number}'))
+            print(print_color(text=f'▼ {folder_number}', color=color_yellow_console))
             mkdir_folder(number=folder_number)
             for xml_file in data_dictionary[folder_number]:
                 file_counter += 1
-                file_size = os.stat(xml_file).st_size
+                file_size: int = os.stat(xml_file).st_size
                 shutil.move(f"{file_path}/{xml_file}", f"{file_path}/{str(folder_number)}/{xml_file}")
-                print(f"  ►{print_blue(text=xml_file)} {print_green(text='Size Bytes')} ► {print_yellow(text=str(file_size))}")
-        print(f"{print_green(text='Total xml')} ► ► {file_counter} ◄ ◄")
+                print_file_in_console: str = print_color(text=xml_file, color=color_blue_console)
+                print_text_size: str = print_color(text='Size Bytes', color=color_green_console)
+                print_size: str = print_color(text=str(file_size), color=color_yellow_console)
+                print(f"  ►{print_file_in_console} {print_text_size} ► {print_size}")
+        print(f"{print_color(text='Total xml', color=color_green_console)} ► ► {file_counter} ◄ ◄")
     except Exception as error_in_move_files:
-        print(print_red(text="Error en mover los archivos XML", message_Exception=error_in_move_files))
+        print(print_color(
+            text="Error en mover los archivos XML",
+            color=color_red_console,
+            message_exception=error_in_move_files))
 
 
 if __name__ == '__main__':
     (files, directory_path) = get_files_and_path(path=argv[1])
-    data = sort_data(data_list=files)
-    dictionary = organize_data(list_data=data)
+    data: list = sort_data(data_list=files)
+    dictionary: dict = organize_data(list_data=data)
     move_files(file_path=directory_path, data_dictionary=dictionary)

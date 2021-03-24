@@ -1,7 +1,7 @@
 # script-to-move-files
 
 ![dependencies](https://img.shields.io/badge/python-v3.6.9-blue.svg)
-![Current Version](https://img.shields.io/badge/version-1.1.2-green.svg)
+![Current Version](https://img.shields.io/badge/version-1.1.3-green.svg)
 
 Este script está diseñado para crear carpetas en orden numérico y mover los archivos en las carpetas creadas.
 
@@ -93,7 +93,7 @@ cd script-to-move-files/
 Ejecutando el siguiente comando podremos crear las carpetas en orden numérico y mover los archivos XML a las carpetas creadas por el script:
 
 ```shell
-python3 main.py PATH_WITH_XML_FILES/
+python3 script.py PATH_WITH_XML_FILES/
 ```
 
 Ejecutando el comando anterior en la terminal y si funciona correctamente aparecerá lo siguiente:
@@ -114,6 +114,8 @@ Total xml ► ► 9 ◄ ◄
 ```
 
 >**Ejemplo de como se imprime en la terminal cuando se mueven los archivos XML.**
+
+**NOTA:** Por necesidad de la creación del script, tiene como regla que la primera carpeta debe alojar la cantidad máxima de `5` archivos y el resto de carpetas la cantidad de `4` archivos, pero sí en la carpeta hay menos, el script también puede crear las carpetas y mover los archivos con normalidad.
 
 ### Correr aplicación con bash o zsh
 
